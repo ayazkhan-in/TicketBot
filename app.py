@@ -2,8 +2,6 @@ import streamlit as st
 import os
 import google.generativeai as genai
 
-st.title("TicketBot")
-
 # API key
 os.environ["GEMINI_API_KEY"] = "AIzaSyCGIfKLFbZq0KFXXnvkIpUhyqmHvu_XzME"
 
