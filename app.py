@@ -2,6 +2,8 @@ import streamlit as st
 import os
 import google.generativeai as genai
 
+st.title("TicketBot")
+
 # API key
 os.environ["GEMINI_API_KEY"] = "AIzaSyCGIfKLFbZq0KFXXnvkIpUhyqmHvu_XzME"
 
@@ -32,7 +34,7 @@ option = st.selectbox(
     ('Chhatrapati Shivaji Maharaj Vastu Sangrahalaya', 'Dr. Bhau Daji Lad Museum', 'National Gallery of Modern Art', 'Mani Bhavan Gandhi Sangrahalaya', 'RBI Monetary Museum')
 )
 # Streamlit app
-st.title("TicketBot")
+
 st.title("Museum Ticket Booking Chatbot")
 
 # Initialize session state for conversation history if it doesn't exist
