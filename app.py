@@ -82,5 +82,3 @@ if st.button("Clear Chat History"):
 st.write("### Conversation History")
 for message in st.session_state['conversation_history']:
     st.write(message)
-
-#Qr generation code
