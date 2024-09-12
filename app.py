@@ -2,8 +2,8 @@ import streamlit as st
 import os
 import google.generativeai as genai
 
-# Set up the API key
-os.environ["GEMINI_API_KEY"] = "AIzaSyB6YzVFIhEyl1zVNv3hyd6g07a0uIjsxzs"
+# API key
+os.environ["GEMINI_API_KEY"] = "AIzaSyCGIfKLFbZq0KFXXnvkIpUhyqmHvu_XzME"
 
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
@@ -31,18 +31,17 @@ option = st.selectbox(
     'Choose Museum:',
     ('Chhatrapati Shivaji Maharaj Vastu Sangrahalaya', 'Dr. Bhau Daji Lad Museum', 'National Gallery of Modern Art', 'Mani Bhavan Gandhi Sangrahalaya', 'RBI Monetary Museum')
 )
-# Create a Streamlit app
+# Streamlit app
 st.title("Museum Ticket Booking Chatbot")
 
 # Initialize session state for conversation history if it doesn't exist
 if 'conversation_history' not in st.session_state:
     st.session_state['conversation_history'] = []
 
-# Welcome message that sets the context
-welcome_message = "Welcome to the Museum Ticket Booking Chatbot! I can help you book tickets for our museum. What would you like to do? Type 'book' to book tickets, 'info' for museum information, or 'exit' to end the conversation. After entering all your details press 'Confirm' button."
+
+welcome_message = "Welcome to the Museum Ticket Booking Chatbot! I can help you book tickets for our museum. What would you like to do? Type 'book' to book tickets, 'info' for museum information, or 'exit' to end the conversation."
 st.write(welcome_message)
 
-# Create a text input field for user input
 user_message = st.text_input("You: ")
 
 context = f"You are a Museum Ticket booking chatbot. The user wants to visit {option}. The price for one Adult ticket is 350Rupees."
@@ -50,7 +49,6 @@ context = f"You are a Museum Ticket booking chatbot. The user wants to visit {op
 # Create a button to submit the user input
 if st.button("Submit"):
     if user_message:
-        # Append user's message to conversation history
         st.session_state['conversation_history'].append(f"You: {user_message}")
 
         if user_message.lower() == 'book':
@@ -73,8 +71,10 @@ if st.button("Submit"):
 
 if st.button("Confirm"):
     chat_history_text = "\n".join(st.session_state['conversation_history'])
-    ai_response = chat_with_ai(f"From the following conversation history, extract Name, Date, Time, and Number of tickets and return it as info = [Name,Date,time,No of tickets] as list\n\n{chat_history_text}")
-    st.write("AI:", ai_response)
+    info = chat_with_ai(f"From the following conversation history, extract Name, Date, Time, and Number of tickets and return it as [True,Name,Date(DD/MM/2024),time(24 hour format),No of tickets(1 default)] as list. Give response as [false] if any of those valuses are missing.\n\n{chat_history_text}")
+    st.write("Terminal:", info)
+    print(info)
+    st.write("AI: Your ticket is processing.")
 
 if st.button("Clear Chat History"):
     st.session_state['conversation_history'] = []
@@ -82,3 +82,5 @@ if st.button("Clear Chat History"):
 st.write("### Conversation History")
 for message in st.session_state['conversation_history']:
     st.write(message)
+
+#Qr generation code
