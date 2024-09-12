@@ -20,7 +20,7 @@ model = genai.GenerativeModel(
     generation_config=generation_config,
 )
 
-# Start a chat session with no initial history
+# chat session with no initial history
 chat_session = model.start_chat(history=[])
 
 def chat_with_ai(message):
@@ -29,13 +29,14 @@ def chat_with_ai(message):
 
 option = st.selectbox(
     'Choose Museum:',
-    ('Chhatrapati Shivaji Maharaj Vastu Sangrahalaya', 'Dr. Bhau Daji Lad Museum', 'National Gallery of Modern Art', 'Mani Bhavan Gandhi Sangrahalaya', 'RBI Monetary Museum')
+    ('Chhatrapati Shivaji Maharaj Vastu Sangrahalaya', 'Dr. Bhau Daji Lad Museum', 
+     'National Gallery of Modern Art', 'Mani Bhavan Gandhi Sangrahalaya', 'RBI Monetary Museum')
 )
 # Streamlit app
-
+st.title("TicketBot")
 st.title("Museum Ticket Booking Chatbot")
 
-# Initialize session state for conversation history if it doesn't exist
+# Initialize session state for conversation history
 if 'conversation_history' not in st.session_state:
     st.session_state['conversation_history'] = []
 
@@ -47,20 +48,28 @@ user_message = st.text_input("You: ")
 
 context = f"You are a Museum Ticket booking chatbot. The user wants to visit {option}. The price for one Adult ticket is 350Rupees."
 
-# Create a button to submit the user input
+# button to submit the user input
 if st.button("Submit"):
     if user_message:
         st.session_state['conversation_history'].append(f"You: {user_message}")
-
+    
         if user_message.lower() == 'book':
-            ai_response = chat_with_ai(f"{context} Your task is to ask user for information like Name, date and time of visit. User wishes to proceed for booking assist them in booking the ticket.")
+            book= (f"{context}\n\n"
+                   "Assist the user with booking a ticket. Ask for:\n"
+                   "- Name\n"
+                   "- Date of visit (DD/MM/YYYY)\n"
+                   "- Time of visit (24-hour format)\n\n"
+                   "Guide them through the booking process after collecting this information."
+                   "Ask user to press confirm button once he fills all the information"
+                  )
+            ai_response = chat_with_ai(book)
             st.session_state['conversation_history'].append(f"AI: {ai_response}")
-            st.write("AI:", ai_response)
+            st.write("TicketBot:", ai_response)
 
         elif user_message.lower() == 'info':
             ai_response = chat_with_ai(f"{context}Give user information about {option}")
             st.session_state['conversation_history'].append(f"AI: {ai_response}")
-            st.write("AI:", ai_response)
+            st.write("TicketBot:", ai_response)
 
         elif user_message.lower() == 'exit':
             st.write("Chat ended.")
@@ -68,14 +77,26 @@ if st.button("Submit"):
         else:
             ai_response = chat_with_ai(f'{context} {user_message}')
             st.session_state['conversation_history'].append(f"AI: {ai_response}")
-            st.write("AI:", ai_response)
+            st.write("TicketBot:", ai_response)
 
 if st.button("Confirm"):
     chat_history_text = "\n".join(st.session_state['conversation_history'])
-    info = chat_with_ai(f"From the following conversation history, extract Name, Date, Time, and Number of tickets and return it as [True,Name,Date(DD/MM/2024),time(24 hour format),No of tickets(1 default)] as list. Give response as [false] if any of those valuses are missing.\n\n{chat_history_text}")
+    prompt= (
+        "Please extract the following details from the conversation history:\n"
+        "- Name\n"
+        "- Date (format: DD/MM/YYYY)\n"
+        "- Time (24-hour format)\n"
+        "- Number of tickets (default is 1)\n\n"
+        "Return the extracted details in the following format as a list:\n"
+        "[True, Name, Date, Time, Number of tickets]\n"
+        "If any of these values are missing, return [False].\n\n"
+        "Conversation History:\n"
+        f"{chat_history_text}"
+    )
+    info = chat_with_ai(prompt)
     st.write("Terminal:", info)
     print(info)
-    st.write("AI: Your ticket is processing.")
+    st.write("TicketBot: Your ticket is processing.")
 
 if st.button("Clear Chat History"):
     st.session_state['conversation_history'] = []
@@ -83,3 +104,4 @@ if st.button("Clear Chat History"):
 st.write("### Conversation History")
 for message in st.session_state['conversation_history']:
     st.write(message)
+
